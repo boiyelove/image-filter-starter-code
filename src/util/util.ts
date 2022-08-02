@@ -1,5 +1,6 @@
 import fs from "fs";
 import Jimp = require("jimp");
+import axios, { AxiosResponse } from "axios";
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
@@ -11,16 +12,27 @@ import Jimp = require("jimp");
 export async function filterImageFromURL(inputURL: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {
-      const photo = await Jimp.read(inputURL);
+     console.log("input string is >>>>>>>>>>>", inputURL);
+      const photoStream: AxiosResponse = await axios.get(
+       inputURL,{
+        responseType: "arraybuffer"
+      });
+      const photo = await Jimp.read(photoStream.data);
+      console.log("Photo >>>>>>>>>>>>>>>>> ", photo);
+      console.log("Dirname >>>>>>>>>>>>>>>>> ", __dirname);
+      photo.write(__dirname +  "/tmp/filtered-" + photo.hash() + ".jpg");
       const outpath =
-        "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
+      __dirname + "/tmp/filtered" + Math.floor(Math.random() * 2000) + ".jpg";
+      // const outPath =__dirname +  "/tmp/filtered-" + photo.hash() + ".jpg"
+      // console.log("Path 1 >>>>>>>>>>>>>>>>> ", outpath);
+      // console.log("outPath 2 >>>>>>>>>>>>>>>>> ", outPath);
       await photo
         .resize(256, 256) // resize
         .quality(60) // set JPEG quality
-        .greyscale() // set greyscale
-        .write(__dirname + outpath, (img) => {
-          resolve(__dirname + outpath);
-        });
+        .grayscale() // set greyscale
+        .write(outpath,(img) => {
+          resolve(outpath)});
+   
     } catch (error) {
       reject(error);
     }

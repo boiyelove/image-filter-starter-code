@@ -37,5 +37,9 @@
     "lodash": "^4.17.21",
     "rimraf": "^3.0.2",
     "axios": "*"
+  },
+  "overrides": {
+    "@types/serve-static": "^1.13.9"
   }
+ 
 }
